@@ -5,6 +5,10 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useState } from 'react';
 import Card from 'react-bootstrap/Card';
+import AddJobModal from './AddJob';
+import { Container } from 'react-bootstrap';
+import { Stack } from 'react-bootstrap';
+
 // const express = require("express");
 // const { URL } = require("url");
 // const { v4: uuid } = require("uuid");
@@ -14,7 +18,7 @@ function JobCard({job, description, id}) {
 
   const [comment, setComment] = useState('')
 
-  const [commentJobsArray, setCommentsJobsArray] = useState('')
+  const [commentsJobsArray, setCommentsJobsArray] = useState([])
 
   const myHeaders = new Headers();
 
@@ -88,17 +92,16 @@ function JobCard({job, description, id}) {
         </Card.Text>
         <Form onSubmit={handleCommentSubmit}>
         <Form.Group className="mb-3">
-          <Form.Label>Write a Comment</Form.Label>
-          <Form.Control placeholder="Write here..." onChange={(e) => setComment(e.target.value)}/>
+          <Form.Control placeholder="Write a comment..." onChange={(e) => setComment(e.target.value)}/>
         </Form.Group>
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" size="sm">
           Post Comment
         </Button>
       </Form>
-      <Button onClick={() => getComments()}>
+      <Button className="mt-2" size="sm"onClick={() => getComments()}>
         View Comments
       </Button>
-      <h6>{commentJobsArray}</h6>
+      {commentsJobsArray.map(comment => (<h6 className="mt-2">{comment}</h6>))}
       </Card.Body>
     </Card>
   );
@@ -135,6 +138,10 @@ function App() {
 
   const myHeaders = new Headers();
 
+  const [jobTitle, setJobTitle] = useState('');
+  const [jobDescription, setJobDescription] = useState('');
+  const [jobsArray, setJobsArray] = useState([])
+  const [modalShow, setModalShow] = useState(false);
 
   const myRequest = new Request('http://localhost:4200/jobs', {
     method: 'GET',
@@ -159,12 +166,12 @@ function App() {
     .then(data => {
       console.log(data); // JSON data parsed by `data.json()` call
     });
+    setModalShow(false)
   }
  
 
-  const [jobTitle, setJobTitle] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
-  const [jobsArray, setJobsArray] = useState([])
+
+
 
   // const app = express();
   // const url = new URL('https://localhost:3000')
@@ -194,34 +201,32 @@ function App() {
   // app.listen(3000, () => console.log("API Server is running..."));
 
   return (
-    <>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label>Job Title</Form.Label>
-          <Form.Control placeholder="Job Title" onChange={(e) => setJobTitle(e.target.value)}/>
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Description</Form.Label>
-          <Form.Control placeholder="Decription" onChange={(e) => setJobDescription(e.target.value)}/>
-        </Form.Group>
-
-        <Button variant="primary" type="submit">
-          Submit
-        </Button>
-      </Form>
-      <Button onClick={() => getJobs()}>
-        Get Jobs
+    <Container className="my-4">
+    <Stack direction='horizontal' gap='2' className='mb-4'>
+      <h1 className="me-auto">Jobs</h1>
+      <Button variant="primary" onClick={() => setModalShow(true)}>
+          Add Job
       </Button>
+      <Button onClick={() => getJobs()}>
+        Update Job Listing
+      </Button>
+    </Stack>
+      <AddJobModal
+        handleSubmit={handleSubmit}
+        setJobTitle={setJobTitle}
+        setJobDescription={setJobDescription}
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />
 
       {jobsArray.map(job => (<JobCard
         job={job.job}
         description={job.description}
-        id={job.id} 
+        id={job.id}
       />))}
-
-    </>
+    </Container>
   );
 }
+
 
 export default App;
