@@ -3,7 +3,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import AddJobModal from './AddJob';
 import { Container } from 'react-bootstrap';
@@ -80,6 +80,7 @@ function JobCard({job, description, id}) {
     postData('http://localhost:4200/comments', { comment: comment, id: id})
     .then(data => {
       console.log(data); // JSON data parsed by `data.json()` call
+      setComment('')
     });
   }
 
@@ -92,7 +93,7 @@ function JobCard({job, description, id}) {
         </Card.Text>
         <Form onSubmit={handleCommentSubmit}>
         <Form.Group className="mb-3">
-          <Form.Control placeholder="Write a comment..." onChange={(e) => setComment(e.target.value)}/>
+          <Form.Control value={comment} placeholder="Write a comment..." onChange={(e) => setComment(e.target.value)}/>
         </Form.Group>
         <Button variant="primary" type="submit" size="sm">
           Post Comment
@@ -108,6 +109,11 @@ function JobCard({job, description, id}) {
 }
 
 function App() {
+
+  useEffect(() => {
+    getJobs()
+    setInterval(getJobs, 5000)
+  }, [])
 
   async function postData(url = '', data = {}) {
     // Default options are marked with *
@@ -207,9 +213,9 @@ function App() {
       <Button variant="primary" onClick={() => setModalShow(true)}>
           Add Job
       </Button>
-      <Button onClick={() => getJobs()}>
+      {/* <Button onClick={() => getJobs()}>
         Update Job Listing
-      </Button>
+      </Button> */}
     </Stack>
       <AddJobModal
         handleSubmit={handleSubmit}
