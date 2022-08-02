@@ -16,6 +16,11 @@ import { Stack } from 'react-bootstrap';
 
 function JobCard({job, description, id}) {
 
+  useEffect(() => {
+    getComments()
+    setInterval(getComments, 5000)
+  }, [])
+
   const [comment, setComment] = useState('')
 
   const [commentsJobsArray, setCommentsJobsArray] = useState([])
@@ -99,9 +104,6 @@ function JobCard({job, description, id}) {
           Post Comment
         </Button>
       </Form>
-      <Button className="mt-2" size="sm"onClick={() => getComments()}>
-        View Comments
-      </Button>
       {commentsJobsArray.map(comment => (<h6 className="mt-2">{comment}</h6>))}
       </Card.Body>
     </Card>
@@ -160,7 +162,7 @@ function App() {
     fetch(myRequest)
     .then(response => response.json())
     .then(myResponse => {
-      console.log(myResponse);
+      console.log(myResponse.content);
       setJobsArray(myResponse.content)
     });
   }
@@ -225,6 +227,7 @@ function App() {
         onHide={() => setModalShow(false)}
       />
 
+      {console.log(jobsArray)}
       {jobsArray.map(job => (<JobCard
         job={job.job}
         description={job.description}
