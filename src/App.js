@@ -14,12 +14,12 @@ import { Stack } from 'react-bootstrap';
 // const { v4: uuid } = require("uuid");
 // const fs = require("fs/promises");
 
-function JobCard({job, description, id}) {
+function JobCard({job, description, id, comments}) {
 
-  useEffect(() => {
-    getComments()
-    setInterval(getComments, 5000)
-  }, [])
+  // useEffect(() => {
+  //   getComments()
+  //   setInterval(getComments, 5000)
+  // }, [])
 
   const [comment, setComment] = useState('')
 
@@ -90,7 +90,7 @@ function JobCard({job, description, id}) {
   }
 
   return (
-    <Card style={{ width: '18rem' }}>
+    <Card style={{ width: '22rem', margin: '30px auto', boxShadow: '5px 5px 8px 0px #cbcbcb'}}>
       <Card.Body>
         <Card.Title>{job}</Card.Title>
         <Card.Text>
@@ -100,11 +100,17 @@ function JobCard({job, description, id}) {
         <Form.Group className="mb-3">
           <Form.Control value={comment} placeholder="Write a comment..." onChange={(e) => setComment(e.target.value)}/>
         </Form.Group>
-        <Button variant="primary" type="submit" size="sm">
+        <Button variant="primary" type="submit" size="sm" className='mb-2'>
           Post Comment
         </Button>
       </Form>
-      {commentsJobsArray.map(comment => (<h6 className="mt-2">{comment}</h6>))}
+      <div>
+      {comments.map((comment, index) => (
+        <div 
+          style={{backgroundColor: index % 2 === 0 ? '#e7e7e7' : 'whitesmoke'}}
+          className="p-2">{comment.comment}</div>
+      ))}
+      </div>
       </Card.Body>
     </Card>
   );
@@ -209,16 +215,22 @@ function App() {
   // app.listen(3000, () => console.log("API Server is running..."));
 
   return (
-    <Container className="my-4">
+
+    <>
+    <header className='header'>
+    <Container>
     <Stack direction='horizontal' gap='2' className='mb-4'>
-      <h1 className="me-auto">Jobs</h1>
-      <Button variant="primary" onClick={() => setModalShow(true)}>
+      <h1 className="me-auto">myJobs.net</h1>
+      <Button variant="primary" onClick={() => setModalShow(true)} className="addJobButton">
           Add Job
       </Button>
       {/* <Button onClick={() => getJobs()}>
         Update Job Listing
       </Button> */}
     </Stack>
+    </Container>
+    </header>
+    <Container className="my-4">
       <AddJobModal
         handleSubmit={handleSubmit}
         setJobTitle={setJobTitle}
@@ -228,12 +240,18 @@ function App() {
       />
 
       {console.log(jobsArray)}
+    <Container className = "job-container">
       {jobsArray.map(job => (<JobCard
         job={job.job}
         description={job.description}
         id={job.id}
+        comments={job.comments}
       />))}
     </Container>
+
+    </Container>
+    </>
+
   );
 }
 
