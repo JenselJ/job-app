@@ -14,6 +14,29 @@ import { Stack } from 'react-bootstrap';
 // const { v4: uuid } = require("uuid");
 // const fs = require("fs/promises");
 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAuk3u3iIFAQ_eNVp3AJSKC27-yPMQqJRw",
+  authDomain: "job-app-4510d.firebaseapp.com",
+  projectId: "job-app-4510d",
+  storageBucket: "job-app-4510d.appspot.com",
+  messagingSenderId: "201503763098",
+  appId: "1:201503763098:web:4b6f8a9019e833d2260d23",
+  measurementId: "G-HJL206C5YT"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const apiUrl = 'https://job-app-backend-sunny.herokuapp.com'
+
 function JobCard({job, description, id, comments}) {
 
   // useEffect(() => {
@@ -28,7 +51,7 @@ function JobCard({job, description, id, comments}) {
   const myHeaders = new Headers();
 
 
-  const myRequest = new Request('http://localhost:4200/jobs', {
+  const myRequest = new Request(`${apiUrl}/jobs`, {
     method: 'GET',
     headers: myHeaders,
     mode: 'cors',
@@ -82,7 +105,7 @@ function JobCard({job, description, id, comments}) {
 
   function handleCommentSubmit(e) {
     e.preventDefault();
-    postData('http://localhost:4200/comments', { comment: comment, id: id})
+    postData(`${apiUrl}/comments`, { comment: comment, id: id})
     .then(data => {
       console.log(data); // JSON data parsed by `data.json()` call
       setComment('')
@@ -157,7 +180,7 @@ function App() {
   const [jobsArray, setJobsArray] = useState([])
   const [modalShow, setModalShow] = useState(false);
 
-  const myRequest = new Request('http://localhost:4200/jobs', {
+  const myRequest = new Request(`${apiUrl}/jobs`, {
     method: 'GET',
     headers: myHeaders,
     mode: 'cors',
@@ -176,7 +199,7 @@ function App() {
   
   function handleSubmit(e) {
     e.preventDefault();
-    postData('http://localhost:4200/jobs', { job: jobTitle, description: jobDescription })
+    postData(`${apiUrl}/jobs`, { job: jobTitle, description: jobDescription })
     .then(data => {
       console.log(data); // JSON data parsed by `data.json()` call
     });
@@ -219,11 +242,17 @@ function App() {
     <>
     <header className='header'>
     <Container>
-    <Stack direction='horizontal' gap='2' className='mb-4'>
-      <h1 className="me-auto">myJobs.net</h1>
+    <Stack direction='horizontal' gap='2' className='mb-4 d-flex justify-content-between'>
+      <div className='title-div'>
+        <div className='nested-title-div'>
+        <h1 className="me-auto">myJobs.net</h1>
+        </div>
+      </div>
+      <div>
       <Button variant="primary" onClick={() => setModalShow(true)} className="addJobButton">
           Add Job
       </Button>
+      </div>
       {/* <Button onClick={() => getJobs()}>
         Update Job Listing
       </Button> */}
